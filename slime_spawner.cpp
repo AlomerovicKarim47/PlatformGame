@@ -11,10 +11,10 @@ void SlimeSpawner::update(){
     }
     if (state == "spawn"){
         firstFrame = 9;
-        lastFrame = 23;
+        lastFrame = 20;
         if (currentSpriteFrame == lastFrame)
             state = "idle";
-        else if (currentSpriteFrame == 16){
+        if (currentSpriteFrame == 16 && (!slimeBall || !slimeBall->active)){
             slimeBall = new Slime();
             slimeBall->setLayer(layer);
             std::vector<const char*> slimeBallFrames = {
@@ -26,14 +26,18 @@ void SlimeSpawner::update(){
                 "slime_move6.bmp", "slime_move7.bmp", "slime_move8.bmp", "slime_move9.bmp", "slime_move10.bmp"
                 };
             slimeBall->setSprite(slimeBallFrames);
-            slimeBall->setMask("slime_ball_mask.bmp");
+            Mask mask = {0, 0, 24, 24};
+            std::vector<Mask> masks = {mask};
+            slimeBall->setMask(masks);
             slimeBall->x = x + 4;
             slimeBall->y = y + 32;
-            slimeBall->otherObjects = otherObjects;
+            slimeBall->health = 2;
             otherObjects->push_back(slimeBall);
+            slimeBall->otherObjects = otherObjects;
+            
         }
     }
-    if (spawnTimer < 0 && (!slimeBall || slimeBall->state == "dead") && currentSpriteFrame == firstFrame){ // making also sure the animation doesn't do weird skips uppon state change
+    if (spawnTimer < 0 && currentSpriteFrame == 0 && !slimeBall){ //start spawn anim at the right frame so no weird visual skips
         spawnTimer = 30 * 5;   
         state = "spawn";
     }

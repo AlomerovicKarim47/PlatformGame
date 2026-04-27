@@ -17,6 +17,7 @@ Object::Object(){
     spriteFlipX = 1;
     firstFrame = 0;
     lastFrame = 0;
+    health = 3;
 }
 
 Object::Object(std::string type) : Object(){
@@ -38,13 +39,8 @@ void Object::setSprite(std::vector<const char*> frames){
     lastFrame = spriteFrames.size() - 1;
 }
 
-void Object::setMask(const char *mask, int maskX, int maskY){
-    BITMAP* maskBmp = load_bitmap(mask, NULL);
-    this->maskX = maskX;
-    this->maskY = maskY;
-    w = maskBmp->w;
-    h = maskBmp->h;    
-    destroy_bitmap(maskBmp);
+void Object::setMask(std::vector<Mask> mask){
+    this->mask = mask;
 }
 
 void Object::setLayer(BITMAP* bmp){
@@ -71,20 +67,52 @@ void Object::update(){
             currentSpriteFrame = firstFrame;
         else
             currentSpriteFrame++;
-        if (currentSpriteFrame > lastFrame)
+        if (currentSpriteFrame > lastFrame){
+            if (destroyOnAnimationEnd){
+                active = false;
+            }
             currentSpriteFrame = firstFrame;
+        }
     }
 }
 
-bool Object::placeMeeting(float x, float y, std::string objectType){
+bool Object::placeMeeting(float x, float y, std::string objectType, std::vector<Object*>* collidedObjects){
     std::vector<Object*> objectsOfType;
     std::copy_if(otherObjects->begin(), otherObjects->end(), std::back_inserter(objectsOfType), [objectType](Object* o) {return o->type == objectType;});
     
+    bool collision = false;
+        
     for (int i = 0; i < objectsOfType.size(); i++){
+        
         Object* o = objectsOfType[i];
-        if (x + maskX + w > o->x + o->maskX && x + maskX < o->x + o->maskX + o->w && y + h > o->y && y < o->y + o->h)
-            return true;
+        
+        for (int j = 0; j < mask.size(); j++){
+            int maskX = mask[j].x;
+            int maskY = mask[j].y;
+            int maskW = mask[j].w;
+            int maskH = mask[j].h;
+            
+            for (int k = 0; k < o->mask.size(); k++){
+                Mask oMask = o->mask[k];
+                int oX = o->x;
+                int oY = o->y;
+                int oMaskX = oMask.x;
+                int oMaskY = oMask.y;
+                int oMaskW = oMask.w;
+                int oMaskH = oMask.h;
+                
+                if (x + maskX + maskW > oX + oMaskX && 
+                    x + maskX < oX + oMaskX + oMaskW && 
+                    y + maskY + maskH > oY + oMaskY && 
+                    y + maskY < oY + oMaskH + oMaskX){
+                        if (collidedObjects){
+                            collidedObjects->push_back(o);
+                        }
+                        collision = true;
+                        break;
+                } 
+            }
+        }
     }
-    
-    return false;
+    return collision;
 }

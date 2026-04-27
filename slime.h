@@ -6,6 +6,9 @@
 
 class Slime : public Object {
     public:
+        
+        Slime();
+        
         std::string state = "ball";
         std::string previousState = "ball";
         float ySpeed = 1;

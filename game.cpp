@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 #include "game.h"
 #include "object.h"
 #include "player.h"
@@ -47,7 +48,10 @@ void Game::loadMap(){
                     "ball_guy_jump2.bmp"};
                 newObject->setLayer(bmp);
                 newObject->setSprite(ballGuyFrames);
-                newObject->setMask("ball_guy_mask.bmp", 5, 0);
+                std::vector<Mask> masks;
+                Mask mask = {5, 0, 22, 32};
+                masks.push_back(mask);
+                newObject->setMask(masks);
                 camera->setFocus(newObject);
                 newObject->x = newObjectX * 32;
                 newObject->y = newObjectY * 32;
@@ -59,7 +63,10 @@ void Game::loadMap(){
                 std::vector<const char*> blockMask = {"boulders_block.bmp"};
                 newObject->setLayer(bmp);
                 newObject->setSprite(blockMask);
-                newObject->setMask("block_mask.bmp");
+                std::vector<Mask> masks;
+                Mask mask = {0, 0, 32, 32};
+                masks.push_back(mask);
+                newObject->setMask(masks);
                 newObject->x = newObjectX * 32;
                 newObject->y = newObjectY * 32;
                 objects->push_back(newObject);
@@ -84,9 +91,6 @@ void Game::loadMap(){
                     "slime_spawner_drop5.bmp",
                     "slime_spawner_drop6.bmp",
                     "slime_spawner_drop7.bmp",
-                    "slime_spawner_drop8.bmp",
-                    "slime_spawner_drop9.bmp",
-                    "slime_spawner_drop10.bmp",
                     "slime_spawner_drop11.bmp",
                     "slime_spawner_drop12.bmp",
                     "slime_spawner_drop13.bmp",
@@ -112,8 +116,15 @@ void Game::loadMap(){
 
 void Game::update(){
     poll_keyboard();
-    for (int i = 0; i < objects->size(); i++)
-        (*objects)[i]->update();
+    for (int i = 0; i < objects->size(); i++){
+        if ((*objects)[i]->active)
+            (*objects)[i]->update();
+        else{
+            //delete (*objects)[i];
+            //(*objects)[i] = NULL;
+            objects->erase(std::remove(objects->begin(), objects->end(), (*objects)[i]), objects->end());
+        }
+    }
     camera->update();    
 }
 
@@ -124,7 +135,8 @@ void Game::draw(){
     }
 
     for (int i = 0; i < objects->size(); i++)
-        (*objects)[i]->draw();
+        if ((*objects)[i]->active)
+            (*objects)[i]->draw();
     
     stretch_blit(bmp, screen, camera->x, camera->y, camera->w, camera->h, 0, 0, 640, 480);
     clear_bitmap(bmp);

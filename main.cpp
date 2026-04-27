@@ -20,7 +20,7 @@ int main(){
     LOCK_FUNCTION(incrementCoreClock);
     install_int_ex(incrementCoreClock, BPS_TO_TIMER(30));
     set_color_depth(32);
-    set_gfx_mode(GFX_AUTODETECT_FULLSCREEN, 640, 480, 0, 0);
+    set_gfx_mode(GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
     
     Game* game = new Game();
     game->init();

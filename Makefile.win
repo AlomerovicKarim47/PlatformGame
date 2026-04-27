@@ -5,8 +5,8 @@ CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
 RES  = 
-OBJ  = main.o object.o camera.o player.o game.o slime_spawner.o slime.o $(RES)
-LINKOBJ  = main.o object.o camera.o player.o game.o slime_spawner.o slime.o $(RES)
+OBJ  = main.o object.o camera.o player.o game.o slime_spawner.o slime.o impact_effect.o $(RES)
+LINKOBJ  = main.o object.o camera.o player.o game.o slime_spawner.o slime.o impact_effect.o $(RES)
 LIBS =  -L"C:/MinGW/lib" ../../../../MinGW/lib/liballeg.a  
 INCS =  -I"C:/MinGW/include" 
 CXXINCS =  -I"C:/MinGW/include"  -I"C:/MinGW/lib/gcc/mingw32/6.3.0/include" 
@@ -46,3 +46,6 @@ slime_spawner.o: slime_spawner.cpp
 
 slime.o: slime.cpp
 	$(CPP) -c slime.cpp -o slime.o $(CXXFLAGS)
+
+impact_effect.o: impact_effect.cpp
+	$(CPP) -c impact_effect.cpp -o impact_effect.o $(CXXFLAGS)

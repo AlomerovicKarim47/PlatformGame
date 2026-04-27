@@ -1,8 +1,19 @@
 #include "slime.h"
 #include <iostream>
+#include "object.h"
+
+Slime::Slime() { 
+    type = "slime"; 
+    health = 2;
+}
 
 void Slime :: update(){
     Object::update();
+    
+    if (health == 0){
+        active = false;
+        return;
+    }
     
     if (state == "ball"){
         lastFrame = 0;
@@ -33,10 +44,13 @@ void Slime :: update(){
     else if (state == "moving"){
         if (previousState == "spawn"){ 
             xSpeed = -2;
-            setMask("slime_mask.bmp", 19, 28);
+            Mask mask = {19, 34, 44, 6};
+            Mask mask2 = {28, 22, 28, 16};
+            std::vector<Mask> masks = {mask, mask2};
+            setMask(masks);
         }
         if (xSpeed == 0)
-            xSpeed = -previousXSpeed;;
+            xSpeed = -previousXSpeed;
         if (xSpeed < 0){
             firstFrame = 15;
             lastFrame = 18;

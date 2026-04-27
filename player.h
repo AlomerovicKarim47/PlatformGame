@@ -14,8 +14,9 @@ private:
     float walkSpeed = 3;
     float jumpSpeed = 10;
     float gravity = 1;
-    float maxFallSpeed = 25;
+    float maxFallSpeed = 20;
     bool jumpReleased = true;
+    bool bounceOffEnemy = false;
 };
 
 #endif
